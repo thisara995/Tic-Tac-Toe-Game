@@ -209,7 +209,7 @@ const displayController = (() => {
 
       case 'tie':
         animatePlayerCard();
-        setRoundResultMsg('', `It's a tie!`);
+        setRoundResultMsg('', `It's a drawn!`);
         break;
     }
     setDisplayStyle('flex', roundResult, boardNextRoundBtn, boardResetScoreBtn);

@@ -105,8 +105,8 @@
 
 /* GENERAL STYLES */
 body {
-  background-image: url(svg/symbols-bg.svg),
-    linear-gradient(90deg, #f9cbd3 0%, #c6a8fd 100%);
+ background-image: url(svg/symbols-bg.svg),
+    linear-gradient(90deg, #8ab6d6 0%, #5691c8 100%);
   background-repeat: no-repeat;
   background-size: cover;
   color: var(--dark);
@@ -156,7 +156,10 @@ footer,
   min-height: 100vh;
 }
 
+
+
 header,
+
 footer {
   padding: 1.5rem 0;
 }
