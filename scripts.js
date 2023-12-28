@@ -3,13 +3,11 @@
 let playerOne;
 let playerTwo;
 
-// DISPLAY CONTROLLER MODULE
 const displayController = (() => {
-  let gameDifficulty = 'easy'; // 'easy' as initial difficulty in case player doesn't select any
+  let gameDifficulty = 'easy';
   let gameMode;
   const getGameMode = () => gameMode;
 
-  // UI - PLAYERS ATTRIBUTES
   const cssRoot = getComputedStyle(document.documentElement);
   const playerOneColor = cssRoot.getPropertyValue('--player1');
   const playerOneSymbolURL = 'svg/cross.svg';
@@ -20,11 +18,9 @@ const displayController = (() => {
   const robotPicture = 'svg/robot.svg';
   const robotSymbol = 'svg/circle-red.svg';
 
-  // UI ELEMENTS - SCREEN NAVIGATION
   const gameScreens = document.querySelectorAll('.game');
   const navigationBtns = document.querySelectorAll('.navigation');
 
-  // UI ELEMENTS - PRE-MATCH
   const playerOneInput = document.querySelector('#player-1');
   const playerTwoInput = document.querySelector('#player-2');
   const enemyCards = document.querySelectorAll('.score-p2');
@@ -32,7 +28,6 @@ const displayController = (() => {
   const enemySymbol = document.querySelector('.enemy-symbol');
   const difficultyBtns = document.querySelectorAll('.difficulty');
 
-  // UI ELEMENTS - GAME BOARD (Different Cards and Scores for Desktop / Mobile views)
   const boardPlayerCards = document.querySelectorAll('.player-card');
   const boardPlayerOneCards = document.querySelectorAll('.card-p1');
   const boardPlayerOneName = document.querySelector('.player-info__name-1');
@@ -48,12 +43,10 @@ const displayController = (() => {
   const roundResultWinner = document.querySelector('.result--winner');
   const roundResultMessage = document.querySelector('.result--text');
 
-  // METHODS - UTILITY
   const setDisplayStyle = (value, ...elements) => {
     elements.forEach((element) => (element.style.display = value));
   };
 
-  // METHODS - SCREEN NAVIGATION
   const navigageTo = (screen) => {
     prepareScreen(screen);
     hideAllScreens();
@@ -100,7 +93,6 @@ const displayController = (() => {
     setDisplayStyle('grid', document.querySelector(`.${screen}`));
   };
 
-  // METHODS - PRE-MATCH
   const setEnemyAttributes = (pictureURL, colorValue, symbolURL) => {
     enemyPictures.forEach((enemyPicture) => (enemyPicture.src = pictureURL));
     enemyCards.forEach((enemyCard) => (enemyCard.style.color = colorValue));
@@ -123,10 +115,8 @@ const displayController = (() => {
     })
   );
 
-  // METHODS - PLAYERS CREATION
 
   const getDifficultyFactor = () => {
-    // Probability of Robot making the optimal move in its turn
     switch (gameDifficulty) {
       case 'easy':
         return 60;
@@ -153,7 +143,6 @@ const displayController = (() => {
     }
   };
 
-  // METHODS - GAME BOARD
   const fillBoardCards = () => {
     switch (gameMode) {
       case 'pvp':
@@ -240,7 +229,6 @@ const displayController = (() => {
     }
   };
 
-  // METHODS - GAME UTILITIES
   boardNextRoundBtn.addEventListener('click', () => gameBoard.resetTurn());
   boardResetScoreBtn.addEventListener('click', () => {
     playerOne.resetScore();
@@ -271,10 +259,9 @@ const displayController = (() => {
     clearBoard();
     playerOneInput.value = '';
     playerTwoInput.value = '';
-    boardDifficultyTag.classList.remove(gameDifficulty); // Prevents DifficultyTag from stacking styles when difficulty is changed
+    boardDifficultyTag.classList.remove(gameDifficulty);
   };
 
-  // PUBLIC
   return {
     animatePlayerCard,
     fillSquare,
@@ -284,7 +271,6 @@ const displayController = (() => {
   };
 })();
 
-// PLAYER FACTORY
 const Player = (name, difficulty) => {
   let score = 0;
   const getName = () => name;
@@ -293,7 +279,6 @@ const Player = (name, difficulty) => {
   const resetScore = () => (score = 0);
   const winRound = () => (score += 1);
 
-  // PUBLIC
   return {
     getName,
     getDifficulty,
@@ -303,7 +288,6 @@ const Player = (name, difficulty) => {
   };
 };
 
-// BOARD MODULE
 const gameBoard = (() => {
   const winningConditions = [
     [0, 3, 6],
@@ -315,9 +299,9 @@ const gameBoard = (() => {
     [0, 4, 8],
     [2, 4, 6],
   ];
-  let boardArray = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // Easier access to index of 'empty' squares
-  let isPlayerOneTurn = true; // Controls turns inside round
-  let isPlayerOneStarting = true; // Controls initial turn each round
+  let boardArray = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  let isPlayerOneTurn = true; 
+  let isPlayerOneStarting = true;
 
   const isSquareEmpty = (square) => {
     return typeof square === 'number';
@@ -351,7 +335,6 @@ const gameBoard = (() => {
     if (roundResult) {
       processResult(roundResult);
     } else {
-      // No win or tie (roundResult === null)
       changeTurn();
       displayController.animatePlayerCard(getCurrentPlayerSymbol());
       if (isRobotTurn()) makeRobotMove();
@@ -359,25 +342,20 @@ const gameBoard = (() => {
   };
 
   const checkRound = (board) => {
-    // Win check
     let winnerSymbol;
     const isWin = winningConditions.some((winPattern) => {
-      // Some row-column-diagonal pattern
       return winPattern.every((index) => {
-        // Every square content (symbol) is the same
-        if (isSquareEmpty(board[index])) return false; // Skip pattern when empty square found
+        if (isSquareEmpty(board[index])) return false; 
         winnerSymbol = board[index];
-        return board[index] === board[winPattern[0]]; // Has symbol always stayed the same? (winner found)
+        return board[index] === board[winPattern[0]]; 
       });
     });
     if (isWin) return winnerSymbol;
 
-    // Tie check
     const emptySquares = getEmptySquares(board);
-    const isTie = emptySquares.length === 0; // Is board full?
+    const isTie = emptySquares.length === 0;
     if (isTie) return 'tie';
 
-    // Round keeps going
     return null;
   };
 
@@ -394,11 +372,10 @@ const gameBoard = (() => {
   };
 
   const makeRobotMove = () => {
-    const bestMoveOdds = playerTwo.getDifficulty(); // Easy: 60% | Mid: 80% | Hard: 100%
+    const bestMoveOdds = playerTwo.getDifficulty();
     if (bestMoveOdds === 100) makeMove(getBestMove());
     else {
-      // Random Number Generator (RNG) for 'easy' and 'mid' robot difficulties
-      const randomMoveOdds = Math.floor(Math.random() * 101); // Random number 0-100
+      const randomMoveOdds = Math.floor(Math.random() * 101);
       const robotMove =
         bestMoveOdds > randomMoveOdds ? getBestMove() : getRandomMove();
       makeMove(robotMove);
@@ -412,7 +389,7 @@ const gameBoard = (() => {
   };
 
   const getBestMove = () => {
-    const boardState = boardArray; // Board copy to avoid modifying the original one while minimax
+    const boardState = boardArray; 
     const emptySquares = getEmptySquares(boardState);
     let bestMoveIndex;
     let bestMoveScore = -Infinity;
@@ -421,7 +398,7 @@ const gameBoard = (() => {
     emptySquares.forEach((index) => {
       boardState[index] = 'o';
       moveScore = minimaxScore(boardState, 0, -Infinity, Infinity, false);
-      boardState[index] = index; // Undo move in board after minimax
+      boardState[index] = index;
       if (moveScore > bestMoveScore) {
         bestMoveScore = moveScore;
         bestMoveIndex = index;
@@ -431,37 +408,31 @@ const gameBoard = (() => {
   };
 
   const minimaxScore = (boardState, depth, alpha, beta, isMaximizing) => {
-    // Static evalution if game would be over in this state
     const roundResult = checkRound(boardState);
     if (roundResult !== null) return staticEvaluation(roundResult, depth);
 
-    // If it's not an ending state, continue minimax recursion
     const emptySquares = getEmptySquares(boardState);
     let moveScore;
     if (isMaximizing) {
-      // Maximizing turn
       let bestMoveScore = -Infinity;
       emptySquares.some((index) => {
         boardState[index] = 'o';
         moveScore = minimaxScore(boardState, depth + 1, alpha, beta, false);
         boardState[index] = index;
         bestMoveScore = Math.max(bestMoveScore, moveScore);
-        // Alpha-beta pruning
         alpha = Math.max(alpha, bestMoveScore);
-        if (alpha >= beta) return true; // Prune this branch (stops evaluating other empty squares)
+        if (alpha >= beta) return true;
       });
       return bestMoveScore;
     } else {
-      // Minimizing turn
       let bestMoveScore = Infinity;
       emptySquares.some((index) => {
         boardState[index] = 'x';
         moveScore = minimaxScore(boardState, depth + 1, alpha, beta, true);
         boardState[index] = index;
         bestMoveScore = Math.min(bestMoveScore, moveScore);
-        // Alpha-beta pruning
         beta = Math.min(beta, bestMoveScore);
-        if (alpha >= beta) return true; // Prune this branch (stops evaluating other empty squares)
+        if (alpha >= beta) return true;
       });
       return bestMoveScore;
     }
@@ -483,7 +454,7 @@ const gameBoard = (() => {
     isPlayerOneStarting = !isPlayerOneStarting;
     isPlayerOneTurn = isPlayerOneStarting;
     displayController.resetTurn();
-    if (isRobotTurn()) makeRobotMove(); // Allows Robot making first move in its turn
+    if (isRobotTurn()) makeRobotMove();
   };
 
   const resetGame = () => {
